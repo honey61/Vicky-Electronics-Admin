@@ -1,0 +1,283 @@
+/* ================= GLOBAL ================= */
+body {
+  background-color: #eef1f7;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #2d2d2d;
+  overflow: hidden;
+}
+
+/* ================= DASHBOARD LAYOUT ================= */
+.dashboard {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+  width: 250px;
+  background: #1e1e2f;
+  color: white;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  padding-left: 8px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu li {
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  background: #2a2a40;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  font-weight: 500;
+}
+
+.menu li:hover {
+  background: #3c3c57;
+}
+
+.menu li.active {
+  background: #4c57ff;
+  font-weight: 600;
+}
+
+/* ================= CONTENT AREA ================= */
+.content {
+  flex: 1;
+  padding: 30px 40px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* ================================================================ */
+/* ========== KEEPING YOUR ORIGINAL BEAUTIFUL UI STYLES =========== */
+/* ================================================================ */
+
+/* ================= CARDS ================= */
+.admin-card {
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  padding: 25px 30px;
+  border: 1px solid #e4e7ec;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ================= HEADINGS ================= */
+.admin-heading {
+  border-left: 5px solid #004aad;
+  padding-left: 12px;
+  margin-bottom: 20px;
+  color: #004aad;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* ================= FORMS ================= */
+.admin-form,
+.product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea,
+.product-form input,
+.product-form select,
+.product-form textarea {
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccd6e0;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #fafbfc;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus,
+.product-form input:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+  border-color: #004aad;
+  box-shadow: 0 0 6px rgba(0, 74, 173, 0.25);
+  background-color: #fff;
+}
+
+textarea {
+  resize: none;
+}
+
+/* ================= BUTTONS ================= */
+.btn-primary {
+  background: #004aad;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #00368d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 74, 173, 0.25);
+}
+
+/* ================= DELETE BUTTON ================= */
+.btn-delete {
+  padding: 6px 12px;
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.btn-delete:hover {
+  background-color: #c92a36;
+  transform: scale(1.05);
+}
+
+/* ================= IMAGE PREVIEW ================= */
+.image-preview {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.image-preview img,
+.preview-img {
+  max-width: 160px;
+  max-height: 160px;
+  border-radius: 8px;
+  border: 2px solid #dce3f0;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 74, 173, 0.15);
+}
+
+/* ================= PRODUCT TABLE ================= */
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 0.95rem;
+}
+
+.product-table th {
+  background-color: #004aad;
+  color: white;
+  text-align: left;
+  padding: 12px;
+  border-radius: 6px 6px 0 0;
+}
+
+.product-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e3e7ee;
+}
+
+.product-table tr:hover {
+  background-color: #f6f9ff;
+}
+
+.table-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ccd6e0;
+}
+
+/* ================= FILTER SECTION ================= */
+.product-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #f9fbff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1px solid #e4e8f0;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-container label {
+  font-weight: 600;
+  color: #004aad;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #004aad;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background-color: white;
+}
+
+/* ================= EMPTY STATE ================= */
+.no-products {
+  text-align: center;
+  color: #7a7a7a;
+  padding: 20px;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* ================= GRID FORM ================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* ================= SCROLLBAR ================= */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #004aad;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00368d;
+}
