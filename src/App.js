@@ -1,13 +1,15 @@
-
 import React, { useState } from "react";
+import { NavLink, Routes, Route } from "react-router-dom";
+
 import AddProduct from "./components/AddProduct";
 import ProductList from "./components/ProductList";
 import Leads from "./components/Leads";
+import Categories from "./components/Categories";
+
 import "./components/Admin.css";
 
 function App() {
   const [products, setProducts] = useState([]);
-  const [activeTab, setActiveTab] = useState("addProduct");
 
   const handleProductAdded = (newProduct) => {
     setProducts([...products, newProduct]);
@@ -26,51 +28,65 @@ function App() {
 
   return (
     <div className="dashboard">
-
-      {/* Left Sidebar */}
+      {/* LEFT SIDEBAR */}
       <aside className="sidebar">
         <h2 className="sidebar-title">Vicky Electronics Admin Panel</h2>
 
         <ul className="menu">
-          <li
-            className={activeTab === "addProduct" ? "active" : ""}
-            onClick={() => setActiveTab("addProduct")}
-          >
-            ➕ Add Product
+          <li>
+            <NavLink to="/categories" className="menu-link">
+              📁 Categories
+            </NavLink>
           </li>
 
-          <li
-            className={activeTab === "productList" ? "active" : ""}
-            onClick={() => setActiveTab("productList")}
-          >
-            📦 Product List
+          <li>
+            <NavLink to="/add-product" className="menu-link">
+              ➕ Add Product
+            </NavLink>
           </li>
 
-          <li
-            className={activeTab === "leads" ? "active" : ""}
-            onClick={() => setActiveTab("leads")}
-          >
-            📋 Leads
+          <li>
+            <NavLink to="/product-list" className="menu-link">
+              📦 Product List
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/leads" className="menu-link">
+              📋 Leads
+            </NavLink>
           </li>
         </ul>
       </aside>
 
-      {/* Right Content Area */}
+      {/* RIGHT CONTENT */}
       <main className="content">
-
-        {activeTab === "addProduct" && (
-          <AddProduct onProductAdded={handleProductAdded} />
-        )}
-
-        {activeTab === "productList" && (
-          <ProductList
-            products={products}
-            onPriceUpdate={handlePriceUpdate}
-            onDeleteProduct={handleDeleteProduct}
+        <Routes>
+          <Route
+            path="/add-product"
+            element={<AddProduct onProductAdded={handleProductAdded} />}
           />
-        )}
 
-        {activeTab === "leads" && <Leads />}
+          <Route
+            path="/product-list"
+            element={
+              <ProductList
+                products={products}
+                onPriceUpdate={handlePriceUpdate}
+                onDeleteProduct={handleDeleteProduct}
+              />
+            }
+          />
+
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/leads" element={<Leads />} />
+
+          {/* DEFAULT */}
+          <Route
+            path="/"
+            element={<AddProduct onProductAdded={handleProductAdded} />}
+          />
+        </Routes>
       </main>
     </div>
   );

@@ -16,8 +16,16 @@ body {
 }
 
 /* ================= SIDEBAR ================= */
+/* Layout */
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6fb;
+}
+
+/* Sidebar */
 .sidebar {
-  width: 250px;
+  width: 260px;
   background: #1e1e2f;
   color: white;
   padding: 25px 20px;
@@ -27,12 +35,13 @@ body {
 }
 
 .sidebar-title {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 25px;
-  padding-left: 8px;
+  margin-bottom: 30px;
+  line-height: 1.3;
 }
 
+/* Menu */
 .menu {
   list-style: none;
   padding: 0;
@@ -40,23 +49,44 @@ body {
 }
 
 .menu li {
-  padding: 12px 15px;
   margin-bottom: 12px;
-  background: #2a2a40;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s ease-in-out;
-  font-weight: 500;
 }
 
-.menu li:hover {
+/* NavLink Styling */
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 15px;
+  background: #2a2a40;
+  border-radius: 8px;
+
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+
+  transition: all 0.3s ease;
+}
+
+/* Hover */
+.menu-link:hover {
   background: #3c3c57;
 }
 
-.menu li.active {
+/* Active Route */
+.menu-link.active {
   background: #4c57ff;
   font-weight: 600;
 }
+
+/* Content */
+.content {
+  flex: 1;
+  padding: 30px;
+  background: #f5f7fb;
+}
+
 
 /* ================= CONTENT AREA ================= */
 .content {
@@ -281,3 +311,85 @@ textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: #00368d;
 }
+
+
+
+
+/*Categories */
+
+
+.categories-page {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-btn {
+  padding: 8px 12px;
+  background: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.category-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.category-table th,
+.category-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.edit-btn,
+.delete-btn {
+  margin-right: 10px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: orange;
+  color: white;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+}
+
+.category-form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0px 0px 10px #ccc;
+}
+
+.save-btn {
+  background: green;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  margin-top: 10px;
+}
+
+.cancel-btn {
+  background: gray;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  margin-left: 10px;
+}
+
+
+/*Category end */
