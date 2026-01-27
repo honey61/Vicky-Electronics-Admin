@@ -1,46 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./Admin.css";
 
 function Categories() {
   const [categories, setCategories] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
+  const [editId, setEditId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
-    order: "",
+    order: ""
   });
+
+  // Fetch categories
+  const loadCategories = async () => {
+    const res = await axios.get("http://localhost:8080/api/categories");
+    setCategories(res.data);
+  };
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   const openForm = () => {
     setFormOpen(true);
-    setEditIndex(null);
+    setEditId(null);
     setFormData({ name: "", order: "" });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (editIndex !== null) {
-      const updated = [...categories];
-      updated[editIndex] = { ...formData };
-      setCategories(updated);
+    if (editId) {
+      await axios.put(
+        `http://localhost:8080/api/categories/${editId}`,
+        formData
+      );
     } else {
-      setCategories([...categories, formData]);
+      await axios.post("http://localhost:8080/api/categories", formData);
     }
 
     setFormOpen(false);
-    setFormData({ name: "", order: "" });
+    loadCategories();
   };
 
-  const handleEdit = (index) => {
-    setEditIndex(index);
+  const handleEdit = (cat) => {
+    setEditId(cat._id);
     setFormOpen(true);
-    setFormData(categories[index]);
+    setFormData({ name: cat.name, order: cat.order });
   };
 
-  const handleDelete = (index) => {
-    const updated = categories.filter((_, i) => i !== index);
-    setCategories(updated);
+  const handleDelete = async (id) => {
+    await axios.delete(`http://localhost:8080/api/categories/${id}`);
+    loadCategories();
   };
 
   return (
@@ -52,11 +64,10 @@ function Categories() {
         </button>
       </div>
 
-      {/* Category Form (Popup style) */}
       {formOpen && (
         <div className="category-form">
           <form onSubmit={handleSubmit}>
-            <h3>{editIndex !== null ? "Edit Category" : "Add Category"}</h3>
+            <h3>{editId ? "Edit Category" : "Add Category"}</h3>
 
             <label>Category Name</label>
             <input
@@ -81,7 +92,6 @@ function Categories() {
             <button type="submit" className="save-btn">
               Save
             </button>
-
             <button
               type="button"
               className="cancel-btn"
@@ -93,7 +103,6 @@ function Categories() {
         </div>
       )}
 
-      {/* Category Table */}
       <table className="category-table">
         <thead>
           <tr>
@@ -113,16 +122,19 @@ function Categories() {
             </tr>
           ) : (
             categories.map((cat, index) => (
-              <tr key={index}>
+              <tr key={cat._id}>
                 <td>{index + 1}</td>
                 <td>{cat.name}</td>
                 <td>{cat.order}</td>
                 <td>
-                  <button onClick={() => handleEdit(index)} className="edit-btn">
+                  <button
+                    onClick={() => handleEdit(cat)}
+                    className="edit-btn"
+                  >
                     ✏️ Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(index)}
+                    onClick={() => handleDelete(cat._id)}
                     className="delete-btn"
                   >
                     🗑 Delete

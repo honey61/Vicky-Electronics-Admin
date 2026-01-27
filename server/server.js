@@ -5,8 +5,10 @@ const dotenv = require("dotenv");
 const Product = require("./models/Product");
 
 dotenv.config();
-
 const app = express();
+app.use(cors());
+app.use(express.json());
+
 
 const PORT = process.env.PORT || 50000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -102,5 +104,8 @@ app.put("/api/products/:id", async (req, res) => {
   res.json(product);
 }); 
 
-// const PORT = process.env.PORT || 5000;
+
+
+app.use("/api/categories", require("./routes/categoryRoutes"));
+
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
