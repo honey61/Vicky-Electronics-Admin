@@ -1,6 +1,4 @@
 
-
-
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import "./Admin.css";
@@ -9,114 +7,288 @@
 //   const [products, setProducts] = useState([]);
 //   const [filter, setFilter] = useState("All");
 
-//   const productTypes = ["All", "Geyser", "Chimney", "Water Motor", "Basic Fan", "Decorative Fan"];
+//   const [editingId, setEditingId] = useState(null);
+//   const [editData, setEditData] = useState({});
 
-//   // ✅ Fetch products from backend
+//   // Pagination
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const recordsPerPage = 20;
+
+//   const productTypes = [
+//     "All",
+//     "Geyser",
+//     "Chimney",
+//     "Water Motor",
+//     "Basic Fan",
+//     "Decorative Fan",
+//   ];
+
+//   // 🔹 Fetch products
 //   useEffect(() => {
-//     axios.get("http://localhost:8080/api/products")
-//       .then((res) => setProducts(res.data))
-//       .catch((err) => console.error("Error fetching products:", err));
+//     fetchProducts();
 //   }, []);
 
-//   // ✅ Update product pricef
-//   const handlePriceUpdate = async (id, newPrice) => {
-//     try {
-//       const product = products.find((p) => p._id === id);
-//       const discount = ((product.mrp - newPrice) / product.mrp) * 100;
-//       const res = await axios.put(`http://localhost:8080/api/products/${id}`, {
-//         price: newPrice,
+//   const fetchProducts = async () => {
+//     const res = await axios.get("http://localhost:8080/api/products");
+//     setProducts(res.data);
+//   };
+
+//   // 🔹 Start Edit
+//   const handleEdit = (product) => {
+//     setEditingId(product._id);
+//     setEditData({ ...product });
+//   };
+
+//   // 🔹 Change handler
+//   const handleChange = (e) => {
+//     setEditData({ ...editData, [e.target.name]: e.target.value });
+//   };
+
+//   // 🔹 Save
+//   const handleSave = async () => {
+//     const discount =
+//       editData.mrp > 0
+//         ? ((editData.mrp - editData.price) / editData.mrp) * 100
+//         : 0;
+
+//     const res = await axios.put(
+//       `http://localhost:8080/api/products/${editingId}`,
+//       {
+//         ...editData,
 //         discount: discount.toFixed(2),
-//       });
-//       setProducts(products.map((p) => (p._id === id ? res.data : p)));
-//     } catch (err) {
-//       console.error("Error updating price:", err);
-//     }
+//       }
+//     );
+
+//     setProducts(
+//       products.map((p) => (p._id === editingId ? res.data : p))
+//     );
+
+//     setEditingId(null);
+//     setEditData({});
 //   };
 
-//   // ✅ Delete product
-//   const handleDeleteProduct = async (id) => {
-//     try {
-//       await axios.delete(`http://localhost:8080/api/products/${id}`);
-//       setProducts(products.filter((p) => p._id !== id));
-//     } catch (err) {
-//       console.error("Error deleting product:", err);
-//     }
+//   // 🔹 Cancel
+//   const handleCancel = () => {
+//     setEditingId(null);
+//     setEditData({});
 //   };
 
+//   // 🔹 Delete
+//   const handleDelete = async (id) => {
+//     await axios.delete(`http://localhost:8080/api/products/${id}`);
+//     setProducts(products.filter((p) => p._id !== id));
+//   };
+
+//   // 🔍 Filter
 //   const filteredProducts =
 //     filter === "All"
 //       ? products
-//       : products.filter((p) => p.type.toLowerCase() === filter.toLowerCase());
+//       : products.filter(
+//           (p) => p.type.toLowerCase() === filter.toLowerCase()
+//         );
+
+//   // 🔢 Pagination
+//   const indexOfLast = currentPage * recordsPerPage;
+//   const indexOfFirst = indexOfLast - recordsPerPage;
+//   const currentRecords = filteredProducts.slice(
+//     indexOfFirst,
+//     indexOfLast
+//   );
+//   const totalPages = Math.ceil(
+//     filteredProducts.length / recordsPerPage
+//   );
+
+//   useEffect(() => {
+//     setCurrentPage(1);
+//   }, [filter]);
 
 //   return (
 //     <div className="admin-card">
 //       <div className="product-list-header">
-//         <h2 className="admin-heading">📦 Product List</h2>
-//         <div className="filter-container">
-//           <label>Filter by Type: </label>
-//           <select
-//             className="filter-select"
-//             value={filter}
-//             onChange={(e) => setFilter(e.target.value)}
-//           >
-//             {productTypes.map((type, index) => (
-//               <option key={index} value={type}>{type}</option>
-//             ))}
-//           </select>
-//         </div>
+//         <h2>📦 Product List</h2>
+
+//         <select
+//           className="filter-select"
+//           value={filter}
+//           onChange={(e) => setFilter(e.target.value)}
+//         >
+//           {productTypes.map((t) => (
+//             <option key={t}>{t}</option>
+//           ))}
+//         </select>
 //       </div>
 
-//       {filteredProducts.length === 0 ? (
-//         <p className="no-products">No products found for "{filter}".</p>
-//       ) : (
-//         <table className="product-table">
-//           <thead>
-//             <tr>
-//               <th>#</th>
-//               <th>Image</th>
-//               <th>Name</th>
-//               <th>Model Name</th>
-//               <th>Type</th>
-//               <th>Capacity</th>
-//               <th>Description</th>
-//               <th>MRP (₹)</th>
-//               <th>Price (₹)</th>
-//               <th>Discount (%)</th>
-//               <th>Warranty</th>
-//               <th>Action</th>
+//       {/* 📊 Table */}
+//       <table className="product-table">
+//         <thead>
+//           <tr>
+//             <th>#</th>
+//             <th>Name</th>
+//             <th>Model</th>
+//             <th>Type</th>
+//             <th>Capacity</th>
+//             <th>Description</th>
+//             <th>MRP</th>
+//             <th>Price</th>
+//             <th>Discount</th>
+//             <th>Warranty</th>
+//             <th>Action</th>
+//           </tr>
+//         </thead>
+
+//         <tbody>
+//           {currentRecords.map((p, i) => (
+//             <tr key={p._id}>
+//               <td>{indexOfFirst + i + 1}</td>
+
+//               {editingId === p._id ? (
+//                 <>
+//                   <td>
+//                     <input
+//                       name="name"
+//                       value={editData.name}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     <input
+//                       name="modelName"
+//                       value={editData.modelName}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     <select
+//                       name="type"
+//                       value={editData.type}
+//                       onChange={handleChange}
+//                     >
+//                       {productTypes
+//                         .filter((t) => t !== "All")
+//                         .map((t) => (
+//                           <option key={t}>{t}</option>
+//                         ))}
+//                     </select>
+//                   </td>
+//                   <td>
+//                     <input
+//                       name="capacity"
+//                       value={editData.capacity || ""}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     <textarea
+//                       name="description"
+//                       value={editData.description || ""}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     <input
+//                       type="number"
+//                       name="mrp"
+//                       value={editData.mrp}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     <input
+//                       type="number"
+//                       name="price"
+//                       value={editData.price}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     {editData.mrp
+//                       ? (
+//                           ((editData.mrp - editData.price) /
+//                             editData.mrp) *
+//                           100
+//                         ).toFixed(2)
+//                       : 0}
+//                     %
+//                   </td>
+//                   <td>
+//                     <input
+//                       name="warranty"
+//                       value={editData.warranty || ""}
+//                       onChange={handleChange}
+//                     />
+//                   </td>
+//                   <td>
+//                     <button className="btn-save" onClick={handleSave}>
+//                       Save
+//                     </button>
+//                     <button
+//                       className="btn-cancel"
+//                       onClick={handleCancel}
+//                     >
+//                       Cancel
+//                     </button>
+//                   </td>
+//                 </>
+//               ) : (
+//                 <>
+//                   <td>{p.name}</td>
+//                   <td>{p.modelName}</td>
+//                   <td>{p.type}</td>
+//                   <td>{p.capacity || "—"}</td>
+//                   <td>{p.description || "—"}</td>
+//                   <td>{p.mrp}</td>
+//                   <td>{p.price}</td>
+//                   <td>{p.discount || "—"}%</td>
+//                   <td>{p.warranty || "—"}</td>
+//                   <td>
+//                     <button
+//                       className="btn-edit"
+//                       onClick={() => handleEdit(p)}
+//                     >
+//                       Edit
+//                     </button>
+//                     <button
+//                       className="btn-delete"
+//                       onClick={() => handleDelete(p._id)}
+//                     >
+//                       Delete
+//                     </button>
+//                   </td>
+//                 </>
+//               )}
 //             </tr>
-//           </thead>
-//           <tbody>
-//             {filteredProducts.map((p, i) => (
-//               <tr key={p._id}>
-//                 <td>{i + 1}</td>
-//                 <td>{p.image ? <img src={p.image} alt={p.name} className="table-img" /> : "—"}</td>
-//                 <td>{p.name}</td>
-//                 <td>{p.modelName}</td>
-//                 <td>{p.type}</td>
-//                 <td>{p.capacity || "—"}</td>
-//                 <td>{p.description || "—"}</td>
-//                 <td>{p.mrp}</td>
-//                 <td>
-//                   <input
-//                     type="number"
-//                     defaultValue={p.price}
-//                     className="price-input"
-//                     onBlur={(e) => handlePriceUpdate(p._id, Number(e.target.value))}
-//                   />
-//                 </td>
-//                 <td>{p.discount ? `${p.discount}%` : "—"}</td>
-//                 <td>{p.warranty || "—"}</td>
-//                 <td>
-//                   <button className="btn-delete" onClick={() => handleDeleteProduct(p._id)}>
-//                     Delete
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       )}
+//           ))}
+//         </tbody>
+//       </table>
+
+//       {/* 🔢 Pagination */}
+//       <div style={{ marginTop: 15 }}>
+//         <button
+//           disabled={currentPage === 1}
+//           onClick={() => setCurrentPage(currentPage - 1)}
+//         >
+//           ◀ Prev
+//         </button>
+
+//         {[...Array(totalPages)].map((_, i) => (
+//           <button
+//             key={i}
+//             onClick={() => setCurrentPage(i + 1)}
+//             style={{
+//               fontWeight: currentPage === i + 1 ? "bold" : "normal",
+//             }}
+//           >
+//             {i + 1}
+//           </button>
+//         ))}
+
+//         <button
+//           disabled={currentPage === totalPages}
+//           onClick={() => setCurrentPage(currentPage + 1)}
+//         >
+//           Next ▶
+//         </button>
+//       </div>
 //     </div>
 //   );
 // }
@@ -128,209 +300,318 @@ import "./Admin.css";
 
 function ProductList() {
   const [products, setProducts] = useState([]);
-  const [filter, setFilter] = useState("All");
+  const [categories, setCategories] = useState([]);
 
-  // 🔢 Pagination state
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+
+  const [editingId, setEditingId] = useState(null);
+  const [editData, setEditData] = useState({});
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 20;
 
-  const productTypes = [
-    "All",
-    "Geyser",
-    "Chimney",
-    "Water Motor",
-    "Basic Fan",
-    "Decorative Fan",
-  ];
+  /* ================= FETCH DATA ================= */
 
-  // ✅ Fetch products
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/products")
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error("Error fetching products:", err));
+    fetchProducts();
+    fetchCategories();
   }, []);
 
-  // ✅ Update product price
-  const handlePriceUpdate = async (id, newPrice) => {
-    try {
-      const product = products.find((p) => p._id === id);
-      const discount =
-        product.mrp > 0
-          ? ((product.mrp - newPrice) / product.mrp) * 100
-          : 0;
-
-      const res = await axios.put(
-        `http://localhost:8080/api/products/${id}`,
-        {
-          price: newPrice,
-          discount: discount.toFixed(2),
-        }
-      );
-
-      setProducts(products.map((p) => (p._id === id ? res.data : p)));
-    } catch (err) {
-      console.error("Error updating price:", err);
-    }
+  const fetchProducts = async () => {
+    const res = await axios.get("http://localhost:8080/api/products");
+    setProducts(res.data);
   };
 
-  // ✅ Delete product
-  const handleDeleteProduct = async (id) => {
-    try {
-      await axios.delete(`http://localhost:8080/api/products/${id}`);
-      setProducts(products.filter((p) => p._id !== id));
-    } catch (err) {
-      console.error("Error deleting product:", err);
-    }
+  const fetchCategories = async () => {
+    const res = await axios.get("http://localhost:8080/api/categories");
+    setCategories(res.data);
   };
 
-  // 🔍 Filter products
-  const filteredProducts =
-    filter === "All"
-      ? products
-      : products.filter(
-          (p) => p.type.toLowerCase() === filter.toLowerCase()
-        );
+  /* ================= EDIT HANDLERS ================= */
 
-  // 🔢 Pagination logic
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const handleEdit = (product) => {
+    setEditingId(product._id);
+    setEditData({ ...product });
+  };
+
+  const handleChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    const discount =
+      editData.mrp > 0
+        ? ((editData.mrp - editData.price) / editData.mrp) * 100
+        : 0;
+
+    const res = await axios.put(
+      `http://localhost:8080/api/products/${editingId}`,
+      {
+        ...editData,
+        discount: discount.toFixed(2),
+      }
+    );
+
+    setProducts(
+      products.map((p) => (p._id === editingId ? res.data : p))
+    );
+
+    setEditingId(null);
+    setEditData({});
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditData({});
+  };
+
+  const handleDelete = async (id) => {
+    await axios.delete(`http://localhost:8080/api/products/${id}`);
+    setProducts(products.filter((p) => p._id !== id));
+  };
+
+  /* ================= FILTER + SEARCH ================= */
+
+  const filteredProducts = products.filter((p) => {
+    const matchType =
+      filter === "All" || p.type?.toLowerCase() === filter.toLowerCase();
+
+    const matchSearch = p.name
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+
+    return matchType && matchSearch;
+  });
+
+  /* ================= PAGINATION ================= */
+
+  const indexOfLast = currentPage * recordsPerPage;
+  const indexOfFirst = indexOfLast - recordsPerPage;
   const currentRecords = filteredProducts.slice(
-    indexOfFirstRecord,
-    indexOfLastRecord
+    indexOfFirst,
+    indexOfLast
   );
 
   const totalPages = Math.ceil(
     filteredProducts.length / recordsPerPage
   );
 
-  const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
-  // Reset page when filter changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [filter]);
+  }, [filter, search]);
+
+  /* ================= UI ================= */
 
   return (
     <div className="admin-card">
       <div className="product-list-header">
-        <h2 className="admin-heading">📦 Product List</h2>
+        <h2>📦 Product List</h2>
 
-        <div className="filter-container">
-          <label>Filter by Type:</label>
-          <select
-            className="filter-select"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            {productTypes.map((type, index) => (
-              <option key={index} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+        <div className="header-center">
+    <div className="search-box">
+      <input
+        placeholder="Search product name..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+    </div>
+  </div>
 
-      {currentRecords.length === 0 ? (
-        <p className="no-products">No products found.</p>
-      ) : (
-        <>
-          {/* 📊 Table */}
-          <table className="product-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Model Name</th>
-                <th>Type</th>
-                <th>Capacity</th>
-                <th>Description</th>
-                <th>MRP (₹)</th>
-                <th>Price (₹)</th>
-                <th>Discount (%)</th>
-                <th>Warranty</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+  <div className="controls">
+    <select
+      className="filter-select"
+      value={filter}
+      onChange={(e) => setFilter(e.target.value)}
+    >
+      <option value="All">All</option>
+      {categories.map((c) => (
+        <option key={c._id} value={c.name}>
+          {c.name}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+      {/* ================= TABLE ================= */}
+      <table className="product-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Model</th>
+            <th>Type</th>
+            <th>Capacity</th>
+            <th>Description</th>
+            <th>MRP</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Warranty</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-            <tbody>
-              {currentRecords.map((p, i) => (
-                <tr key={p._id}>
-                  <td>{indexOfFirstRecord + i + 1}</td>
+        <tbody>
+          {currentRecords.map((p, i) => (
+            <tr key={p._id}>
+              <td>{indexOfFirst + i + 1}</td>
+
+              {editingId === p._id ? (
+                <>
                   <td>
-                    {p.image ? (
-                      <img src={p.image} alt={p.name} className="table-img" />
-                    ) : (
-                      "—"
-                    )}
+                    <input
+                      name="name"
+                      value={editData.name}
+                      onChange={handleChange}
+                    />
                   </td>
+
+                  <td>
+                    <input
+                      name="modelName"
+                      value={editData.modelName}
+                      onChange={handleChange}
+                    />
+                  </td>
+
+                  {/* ✅ Dynamic Category Dropdown */}
+                  <td>
+                    <select
+                      name="type"
+                      value={editData.type}
+                      onChange={handleChange}
+                    >
+                      {categories.map((c) => (
+                        <option key={c._id} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+
+                  <td>
+                    <input
+                      name="capacity"
+                      value={editData.capacity || ""}
+                      onChange={handleChange}
+                    />
+                  </td>
+
+                  <td>
+                    <textarea
+                      name="description"
+                      value={editData.description || ""}
+                      onChange={handleChange}
+                    />
+                  </td>
+
+                  <td>
+                    <input
+                      type="number"
+                      name="mrp"
+                      value={editData.mrp}
+                      onChange={handleChange}
+                    />
+                  </td>
+
+                  <td>
+                    <input
+                      type="number"
+                      name="price"
+                      value={editData.price}
+                      onChange={handleChange}
+                    />
+                  </td>
+
+                  <td>
+                    {editData.mrp
+                      ? (
+                          ((editData.mrp - editData.price) /
+                            editData.mrp) *
+                          100
+                        ).toFixed(2)
+                      : 0}
+                    %
+                  </td>
+
+                  <td>
+                    <input
+                      name="warranty"
+                      value={editData.warranty || ""}
+                      onChange={handleChange}
+                    />
+                  </td>
+
+                  <td>
+                    <button className="btn-save" onClick={handleSave}>
+                      Save
+                    </button>
+                    <button className="btn-cancel" onClick={handleCancel}>
+                      Cancel
+                    </button>
+                  </td>
+                </>
+              ) : (
+                <>
                   <td>{p.name}</td>
                   <td>{p.modelName}</td>
                   <td>{p.type}</td>
                   <td>{p.capacity || "—"}</td>
                   <td>{p.description || "—"}</td>
                   <td>{p.mrp}</td>
-                  <td>
-                    <input
-                      type="number"
-                      defaultValue={p.price}
-                      className="price-input"
-                      onBlur={(e) =>
-                        handlePriceUpdate(p._id, Number(e.target.value))
-                      }
-                    />
-                  </td>
-                  <td>{p.discount ? `${p.discount}%` : "—"}</td>
+                  <td>{p.price}</td>
+                  <td>{p.discount || "—"}%</td>
                   <td>{p.warranty || "—"}</td>
                   <td>
                     <button
+                      className="btn-edit"
+                      onClick={() => handleEdit(p)}
+                    >
+                      Edit
+                    </button>
+                    <button
                       className="btn-delete"
-                      onClick={() => handleDeleteProduct(p._id)}
+                      onClick={() => handleDelete(p._id)}
                     >
                       Delete
                     </button>
                   </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                </>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-          {/* 🔢 Pagination Controls */}
-          <div style={{ marginTop: "15px", display: "flex", gap: "8px" }}>
-            <button
-              disabled={currentPage === 1}
-              onClick={() => goToPage(currentPage - 1)}
-            >
-              ◀ Prev
-            </button>
+      {/* ================= PAGINATION ================= */}
+      <div style={{ marginTop: 15 }}>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          ◀ Prev
+        </button>
 
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goToPage(i + 1)}
-                style={{
-                  fontWeight: currentPage === i + 1 ? "bold" : "normal",
-                }}
-              >
-                {i + 1}
-              </button>
-            ))}
+        {[...Array(totalPages)].map((_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            style={{
+              fontWeight: currentPage === i + 1 ? "bold" : "normal",
+            }}
+          >
+            {i + 1}
+          </button>
+        ))}
 
-            <button
-              disabled={currentPage === totalPages}
-              onClick={() => goToPage(currentPage + 1)}
-            >
-              Next ▶
-            </button>
-          </div>
-        </>
-      )}
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Next ▶
+        </button>
+      </div>
     </div>
   );
 }
