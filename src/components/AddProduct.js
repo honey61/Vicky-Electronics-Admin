@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Admin.css";
 import axios from "axios";
 
 function AddProduct({ onProductAdded }) {
+  const [categories, setCategories] = useState([]);
+
   const [form, setForm] = useState({
     name: "",
     modelName: "",
@@ -16,13 +18,19 @@ function AddProduct({ onProductAdded }) {
     description: "",
   });
 
-  const productTypes = [
-    "Geyser",
-    "Chimney",
-    "Water Motor",
-    "Basic Fan",
-    "Decorative Fan",
-  ];
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/categories");
+      setCategories(res.data);
+    } catch (err) {
+      console.error("Failed to load categories", err);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
 
   const geyserCapacities = [
     "3 Ltr",
@@ -136,13 +144,14 @@ function AddProduct({ onProductAdded }) {
 
         <label>Product Type</label>
         <select name="type" value={form.type} onChange={handleChange} required>
-          <option value="">Select Product Type</option>
-          {productTypes.map((type, idx) => (
-            <option key={idx} value={type}>
-              {type}
-            </option>
-          ))}
-        </select>
+  <option value="">Select Product Type</option>
+  {categories.map((cat) => (
+    <option key={cat._id} value={cat.name}>
+      {cat.name}
+    </option>
+  ))}
+</select>
+
 
         {form.type === "Geyser" && (
           <>
