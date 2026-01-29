@@ -5,7 +5,7 @@ import AddProduct from "./components/AddProduct";
 import ProductList from "./components/ProductList";
 import Leads from "./components/Leads";
 import Categories from "./components/Categories";
-
+import Electricians from "./components/Electricians";
 import "./components/Admin.css";
 
 function App() {
@@ -56,6 +56,11 @@ function App() {
               📋 Leads
             </NavLink>
           </li>
+           <li>
+            <NavLink to="/electricians" className="menu-link">
+              🧑‍🔧 Electricians
+            </NavLink>
+          </li>
         </ul>
       </aside>
 
@@ -80,6 +85,7 @@ function App() {
 
           <Route path="/categories" element={<Categories />} />
           <Route path="/leads" element={<Leads />} />
+          <Route path="/electricians" element={<Electricians />} />
 
           {/* DEFAULT */}
           <Route
