@@ -105,11 +105,9 @@ app.put("/api/products/:id", async (req, res) => {
 }); 
 
 
-
-
 app.use("/api/leads", require("./routes/leadRoutes"));
 app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/electricians", require("./routes/electricianRoutes"));
-
+app.use("/api/chatbot", require("./routes/ChatbotRoutes"));
 // const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running on port ${PORT}`));
