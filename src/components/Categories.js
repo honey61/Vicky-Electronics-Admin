@@ -14,7 +14,7 @@ function Categories() {
 
   // Fetch categories
   const loadCategories = async () => {
-    const res = await axios.get("http://localhost:8080/api/categories");
+    const res = await axios.get("https://vicky-ele-server-1.onrender.com/api/categories");
     setCategories(res.data);
   };
 
@@ -33,11 +33,11 @@ function Categories() {
 
     if (editId) {
       await axios.put(
-        `http://localhost:8080/api/categories/${editId}`,
+        `https://vicky-ele-server-1.onrender.com/api/categories/${editId}`,
         formData
       );
     } else {
-      await axios.post("http://localhost:8080/api/categories", formData);
+      await axios.post("https://vicky-ele-server-1.onrender.com/api/categories", formData);
     }
 
     setFormOpen(false);
@@ -51,7 +51,7 @@ function Categories() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:8080/api/categories/${id}`);
+    await axios.delete(`https://vicky-ele-server-1.onrender.com/api/categories/${id}`);
     loadCategories();
   };
 

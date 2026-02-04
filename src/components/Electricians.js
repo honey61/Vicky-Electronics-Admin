@@ -22,7 +22,7 @@ export default function Electricians() {
   }, []);
 
   const fetchElectricians = async () => {
-    const res = await axios.get("http://localhost:8080/api/electricians");
+    const res = await axios.get("https://vicky-ele-server-1.onrender.com/api/electricians");
     setList(res.data);
   };
 
@@ -35,13 +35,13 @@ export default function Electricians() {
 
     if (editingId) {
       const res = await axios.put(
-        `http://localhost:8080/api/electricians/${editingId}`,
+        `https://vicky-ele-server-1.onrender.com/api/electricians/${editingId}`,
         form
       );
       setList(list.map((l) => (l._id === editingId ? res.data : l)));
     } else {
       const res = await axios.post(
-        "http://localhost:8080/api/electricians",
+        "https://vicky-ele-server-1.onrender.com/api/electricians",
         form
       );
       setList([res.data, ...list]);
@@ -68,7 +68,7 @@ export default function Electricians() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:8080/api/electricians/${id}`);
+    await axios.delete(`https://vicky-ele-server-1.onrender.com/api/electricians/${id}`);
     setList(list.filter((l) => l._id !== id));
   };
 

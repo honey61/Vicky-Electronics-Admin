@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./Admin.css";
 import axios from "axios";
 
-function AddProduct({ onProductAdded }) {
-  const [categories, setCategories] = useState([]);
 
+function AddProduct({ onProductAdded }) {
+  
+  const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({
     name: "",
     modelName: "",
@@ -19,9 +20,10 @@ function AddProduct({ onProductAdded }) {
   });
 
 useEffect(() => {
+   const API_URL = process.env.REACT_APP_API;
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/categories");
+      const res = await axios.get(`${API_URL}/api/categories`);
       setCategories(res.data);
     } catch (err) {
       console.error("Failed to load categories", err);
@@ -95,7 +97,7 @@ useEffect(() => {
       return alert("Please fill all required fields");
 
     try {
-      const res = await axios.post("http://localhost:8080/api/products", form);
+      const res = await axios.post("https://vicky-ele-server-1.onrender.com/api/products", form);
       alert("✅ Product added successfully!");
       onProductAdded(res.data.product);
 
