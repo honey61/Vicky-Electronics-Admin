@@ -20,10 +20,10 @@ function AddProduct({ onProductAdded }) {
   });
 
 useEffect(() => {
-   const API_URL = process.env.REACT_APP_API;
+
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/categories`);
+      const res = await axios.get(`https://vicky-ele-server-1.onrender.com/api/categories`);
       setCategories(res.data);
     } catch (err) {
       console.error("Failed to load categories", err);
