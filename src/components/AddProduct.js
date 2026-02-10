@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Admin.css";
 import axios from "axios";
 
-
 function AddProduct({ onProductAdded }) {
-  
   const [categories, setCategories] = useState([]);
+
   const [form, setForm] = useState({
     name: "",
     modelName: "",
@@ -17,22 +16,23 @@ function AddProduct({ onProductAdded }) {
     warranty: "",
     images: [],
     description: "",
+    isPopular: false, // ✅ boolean
   });
 
-useEffect(() => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get(
+          "https://vicky-ele-server-1.onrender.com/api/categories"
+        );
+        setCategories(res.data);
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    };
 
-  const fetchCategories = async () => {
-    try {
-      const res = await axios.get(`https://vicky-ele-server-1.onrender.com/api/categories`);
-      setCategories(res.data);
-    } catch (err) {
-      console.error("Failed to load categories", err);
-    }
-  };
-
-  fetchCategories();
-}, []);
-
+    fetchCategories();
+  }, []);
 
   const geyserCapacities = [
     "3 Ltr",
@@ -43,10 +43,14 @@ useEffect(() => {
     "32 Ltr",
   ];
 
-  // ✅ Handle text field changes
+  // ✅ Handle all input changes (including checkbox)
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    let updatedForm = { ...form, [name]: value };
+    const { name, value, type, checked } = e.target;
+
+    let updatedForm = {
+      ...form,
+      [name]: type === "checkbox" ? checked : value,
+    };
 
     const mrp = parseFloat(updatedForm.mrp);
     const price = parseFloat(updatedForm.price);
@@ -68,6 +72,7 @@ useEffect(() => {
   // ✅ Handle multiple image uploads
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
+
     const readers = files.map(
       (file) =>
         new Promise((resolve) => {
@@ -78,11 +83,14 @@ useEffect(() => {
     );
 
     Promise.all(readers).then((images) => {
-      setForm((prev) => ({ ...prev, images: [...prev.images, ...images] }));
+      setForm((prev) => ({
+        ...prev,
+        images: [...prev.images, ...images],
+      }));
     });
   };
 
-  // ✅ Remove image from preview
+  // ✅ Remove image preview
   const handleRemoveImage = (index) => {
     setForm((prev) => ({
       ...prev,
@@ -93,11 +101,18 @@ useEffect(() => {
   // ✅ Submit product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.price || !form.type)
-      return alert("Please fill all required fields");
+
+    if (!form.name || !form.price || !form.type) {
+      alert("Please fill all required fields");
+      return;
+    }
 
     try {
-      const res = await axios.post("https://vicky-ele-server-1.onrender.com/api/products", form);
+      const res = await axios.post(
+        "https://vicky-ele-server-1.onrender.com/api/products",
+        form
+      );
+
       alert("✅ Product added successfully!");
       onProductAdded(res.data.product);
 
@@ -113,6 +128,7 @@ useEffect(() => {
         warranty: "",
         images: [],
         description: "",
+        isPopular: false,
       });
     } catch (err) {
       console.error(err);
@@ -123,6 +139,7 @@ useEffect(() => {
   return (
     <div className="admin-card">
       <h2 className="admin-heading">➕ Add New Product</h2>
+
       <form className="admin-form" onSubmit={handleSubmit}>
         <label>Product Name</label>
         <input
@@ -145,15 +162,19 @@ useEffect(() => {
         />
 
         <label>Product Type</label>
-        <select name="type" value={form.type} onChange={handleChange} required>
-  <option value="">Select Product Type</option>
-  {categories.map((cat) => (
-    <option key={cat._id} value={cat.name}>
-      {cat.name}
-    </option>
-  ))}
-</select>
-
+        <select
+          name="type"
+          value={form.type}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select Product Type</option>
+          {categories.map((cat) => (
+            <option key={cat._id} value={cat.name}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
         {form.type === "Geyser" && (
           <>
@@ -221,36 +242,39 @@ useEffect(() => {
           rows="3"
         />
 
-        {/* ✅ Multiple Image Upload */}
+        <label>
+          <input
+            type="checkbox"
+            name="isPopular"
+            checked={form.isPopular}
+            onChange={handleChange}
+          />
+          {" "}Add to Popular Section
+        </label>
+
         <label>Product Images</label>
         <input
           type="file"
-          name="images"
           accept="image/*"
           multiple
           onChange={handleImageUpload}
         />
 
         {form.images.length > 0 && (
-          <div className="image-preview" style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          <div
+            className="image-preview"
+            style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
+          >
             {form.images.map((img, idx) => (
-              <div
-                key={idx}
-                style={{
-                  position: "relative",
-                  width: "100px",
-                  height: "100px",
-                }}
-              >
+              <div key={idx} style={{ position: "relative" }}>
                 <img
                   src={img}
                   alt={`Preview ${idx}`}
                   style={{
-                    width: "100%",
-                    height: "100%",
+                    width: "100px",
+                    height: "100px",
                     objectFit: "cover",
                     borderRadius: "8px",
-                    boxShadow: "0 0 4px rgba(0,0,0,0.3)",
                   }}
                 />
                 <button
@@ -258,8 +282,8 @@ useEffect(() => {
                   onClick={() => handleRemoveImage(idx)}
                   style={{
                     position: "absolute",
-                    top: "-8px",
-                    right: "-8px",
+                    top: "-6px",
+                    right: "-6px",
                     background: "red",
                     color: "white",
                     border: "none",
@@ -267,7 +291,6 @@ useEffect(() => {
                     width: "20px",
                     height: "20px",
                     cursor: "pointer",
-                    fontSize: "12px",
                   }}
                 >
                   ✕
