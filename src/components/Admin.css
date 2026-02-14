@@ -435,3 +435,169 @@ textarea {
 
 
 /*Category end */
+
+/* ================= RESPONSIVE DESIGN ================= */
+
+/* Large Tablets */
+@media (max-width: 1024px) {
+
+  .sidebar {
+    width: 220px;
+    padding: 20px 15px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .search-box input {
+    width: 200px;
+  }
+
+  .admin-card {
+    padding: 20px;
+  }
+}
+
+
+/* Tablets */
+@media (max-width: 768px) {
+
+  body {
+    overflow: auto; /* allow scrolling on mobile */
+  }
+
+  .dashboard {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 15px;
+  }
+
+  .sidebar-title {
+    display: none;
+  }
+
+  .menu {
+    display: flex;
+    gap: 10px;
+  }
+
+  .menu li {
+    margin-bottom: 0;
+  }
+
+  .menu-link {
+    white-space: nowrap;
+  }
+
+  .content {
+    height: auto;
+    padding: 20px;
+  }
+
+  .product-list-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .category-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .product-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+
+/* Mobile Phones */
+@media (max-width: 480px) {
+
+  .admin-card {
+    padding: 15px;
+  }
+
+  .admin-heading {
+    font-size: 1.1rem;
+  }
+
+  .btn-primary,
+  .btn-delete,
+  .add-btn,
+  .save-btn,
+  .cancel-btn {
+    width: 100%;
+  }
+
+  .image-preview img,
+  .preview-img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .search-box input {
+    font-size: 13px;
+  }
+
+  .category-form {
+    padding: 15px;
+  }
+}
+/* ================= PRODUCT TABLE FIX ================= */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.product-table {
+  min-width: 1400px; /* Prevents column collapse */
+}
+
+.product-table input,
+.product-table select,
+.product-table textarea {
+  width: 100%;
+  min-width: 100px;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+.product-table textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.product-table td {
+  vertical-align: middle;
+}
+
+/* Prevent long text breaking layout */
+.product-table td {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* Fix action buttons */
+.product-table button {
+  padding: 6px 10px;
+  margin: 2px 0;
+  font-size: 13px;
+}
