@@ -16,7 +16,8 @@ function AddProduct({ onProductAdded }) {
     warranty: "",
     images: [],
     description: "",
-    isPopular: false, // ✅ boolean
+    isPopular: false,
+    rank: "",
   });
 
   useEffect(() => {
@@ -42,6 +43,12 @@ function AddProduct({ onProductAdded }) {
     "25 Ltr",
     "32 Ltr",
   ];
+const rankOptions = [
+  "Most Recommended",
+  "Recommended",
+  "Average",
+  "Less Recommended"
+];
 
   // ✅ Handle all input changes (including checkbox)
   const handleChange = (e) => {
@@ -129,6 +136,7 @@ function AddProduct({ onProductAdded }) {
         images: [],
         description: "",
         isPopular: false,
+        rank: "",
       });
     } catch (err) {
       console.error(err);
@@ -251,6 +259,20 @@ function AddProduct({ onProductAdded }) {
           />
           {" "}Add to Popular Section
         </label>
+
+        <label>Product Rank</label>
+        <select
+          name="rank"
+          value={form.rank}
+          onChange={handleChange}
+        >
+          <option value="">Select Rank</option>
+          {rankOptions.map((rank, idx) => (
+            <option key={idx} value={rank}>
+              {rank}
+            </option>
+          ))}
+        </select>
 
         <label>Product Images</label>
         <input
