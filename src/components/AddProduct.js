@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./Admin.css";
 import axios from "axios";
 
@@ -16,6 +18,7 @@ function AddProduct({ onProductAdded }) {
     warranty: "",
     images: [],
     description: "",
+    detailDescription: "",
     isPopular: false,
     rank: "",
   });
@@ -135,6 +138,7 @@ const rankOptions = [
         warranty: "",
         images: [],
         description: "",
+        detailDescription: "",
         isPopular: false,
         rank: "",
       });
@@ -249,7 +253,21 @@ const rankOptions = [
           onChange={handleChange}
           rows="3"
         />
+    <label style={{ marginTop: "20px" }}>
+          Product Detail Description
+        </label>
 
+        <CKEditor
+          editor={ClassicEditor}
+          data={form.detailDescription}
+          onChange={(event, editor) => {
+            const data = editor.getData();
+            setForm((prev) => ({
+              ...prev,
+              detailDescription: data,
+            }));
+          }}
+        />
         <label>
           <input
             type="checkbox"
