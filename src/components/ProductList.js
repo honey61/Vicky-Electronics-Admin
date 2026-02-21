@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import "./Admin.css";
 
 function ProductList() {
@@ -18,15 +20,12 @@ function ProductList() {
   const DEFAULT_IMAGE =
     "https://www.crompton.co.in/cdn/shop/files/Storage_Water_Heater_07057b7d-8839-409e-87dd-336b1e7ef16c_600x.png?v=1694501155";
 
-  // ✅ Rank Options (Added Only)
   const rankOptions = [
     "Most Recommended",
     "Recommended",
     "Average",
     "Less Recommended",
   ];
-
-  /* ================= FETCH DATA ================= */
 
   useEffect(() => {
     fetchProducts();
@@ -47,8 +46,6 @@ function ProductList() {
     setCategories(res.data);
   };
 
-  /* ================= EDIT ================= */
-
   const handleEdit = (product) => {
     setEditingId(product._id);
     setEditData({
@@ -56,27 +53,24 @@ function ProductList() {
       image: product.images?.[0] || "",
       removeImage: false,
       isPopular: !!product.isPopular,
-      rank: product.rank || "", // ✅ ensure rank editable
+      rank: product.rank || "",
     });
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    setEditData({
-      ...editData,
+    setEditData((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
-
-  /* ================= SAVE ================= */
 
   const handleSave = async () => {
     const mrp = Number(editData.mrp);
     const price = Number(editData.price);
 
-    const discount =
-      mrp > 0 ? (((mrp - price) / mrp) * 100).toFixed(2) : 0;
+    const discount = mrp > 0 ? (((mrp - price) / mrp) * 100).toFixed(2) : 0;
 
     let images = [];
     if (!editData.removeImage && editData.image?.trim()) {
@@ -99,9 +93,7 @@ function ProductList() {
       payload
     );
 
-    setProducts(
-      products.map((p) => (p._id === editingId ? res.data : p))
-    );
+    setProducts((prev) => prev.map((p) => (p._id === editingId ? res.data : p)));
 
     setEditingId(null);
     setEditData({});
@@ -113,47 +105,39 @@ function ProductList() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(
-      `https://vicky-ele-server-1.onrender.com/api/products/${id}`
-    );
-    setProducts(products.filter((p) => p._id !== id));
+    await axios.delete(`https://vicky-ele-server-1.onrender.com/api/products/${id}`);
+    setProducts((prev) => prev.filter((p) => p._id !== id));
   };
-
-  /* ================= FILTER + SEARCH ================= */
 
   const filteredProducts = products.filter((p) => {
     const matchType =
       filter === "All" || p.type?.toLowerCase() === filter.toLowerCase();
 
-    const matchSearch = p.name
-      ?.toLowerCase()
-      .includes(search.toLowerCase());
+    const matchSearch = p.name?.toLowerCase().includes(search.toLowerCase());
 
     return matchType && matchSearch;
   });
 
-  /* ================= PAGINATION ================= */
-
   const indexOfLast = currentPage * recordsPerPage;
   const indexOfFirst = indexOfLast - recordsPerPage;
-  const currentRecords = filteredProducts.slice(
-    indexOfFirst,
-    indexOfLast
-  );
-
-  // const totalPages = Math.ceil(
-  //   filteredProducts.length / recordsPerPage
-  // );
+  const currentRecords = filteredProducts.slice(indexOfFirst, indexOfLast);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [filter, search]);
 
-  /* ================= UI ================= */
+  const discountPreview =
+    Number(editData.mrp) > 0
+      ? (
+          ((Number(editData.mrp) - Number(editData.price || 0)) /
+            Number(editData.mrp)) *
+          100
+        ).toFixed(2)
+      : 0;
 
   return (
     <div className="admin-card">
-      <h2>📦 Product List</h2>
+      <h2>Product List</h2>
 
       <div className="product-list-header">
         <input
@@ -172,117 +156,191 @@ function ProductList() {
         </select>
       </div>
 
-      <table className="product-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Model</th>
-            <th>Type</th>
-            <th>Capacity</th>
-            <th>Description</th>
-            <th>Warranty</th>
-            <th>MRP</th>
-            <th>Price</th>
-            <th>Discount</th>
-            <th>Popular</th>
-            <th>Rank</th> {/* ✅ Added */}
-            <th>Action</th>
-          </tr>
-        </thead>
+      {editingId && (
+        <div className="product-edit-panel">
+          <h3>Edit Product Record</h3>
 
-        <tbody>
-          {currentRecords.map((p, i) => (
-            <tr key={p._id}>
-              <td>{indexOfFirst + i + 1}</td>
+          <div className="form-grid product-edit-grid">
+            <div>
+              <label>Name</label>
+              <input name="name" value={editData.name || ""} onChange={handleChange} />
+            </div>
 
-              <td>
-                <img
-                  src={p.images?.[0] || DEFAULT_IMAGE}
-                  alt={p.name}
-                  style={{ width: 60, height: 60 }}
-                />
-              </td>
+            <div>
+              <label>Model</label>
+              <input
+                name="modelName"
+                value={editData.modelName || ""}
+                onChange={handleChange}
+              />
+            </div>
 
-              {editingId === p._id ? (
-                <>
-                  <td><input name="name" value={editData.name || ""} onChange={handleChange} /></td>
-                  <td><input name="modelName" value={editData.modelName || ""} onChange={handleChange} /></td>
+            <div>
+              <label>Category</label>
+              <select name="type" value={editData.type || ""} onChange={handleChange}>
+                <option value="">Select Category</option>
+                {categories.map((c) => (
+                  <option key={c._id} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                  <td>
-                    <select name="type" value={editData.type || ""} onChange={handleChange}>
-                      {categories.map((c) => (
-                        <option key={c._id} value={c.name}>{c.name}</option>
-                      ))}
-                    </select>
-                  </td>
+            <div>
+              <label>Capacity</label>
+              <input name="capacity" value={editData.capacity || ""} onChange={handleChange} />
+            </div>
 
-                  <td><input name="capacity" value={editData.capacity || ""} onChange={handleChange} /></td>
-                  <td><textarea name="description" value={editData.description || ""} onChange={handleChange} /></td>
-                  <td><input name="warranty" value={editData.warranty || ""} onChange={handleChange} /></td>
+            <div>
+              <label>Warranty</label>
+              <input name="warranty" value={editData.warranty || ""} onChange={handleChange} />
+            </div>
 
-                  <td><input type="number" name="mrp" value={editData.mrp || ""} onChange={handleChange} /></td>
-                  <td><input type="number" name="price" value={editData.price || ""} onChange={handleChange} /></td>
-                  <td>{editData.mrp ? (((editData.mrp - editData.price) / editData.mrp) * 100).toFixed(2) : 0}%</td>
+            <div>
+              <label>Image URL</label>
+              <input name="image" value={editData.image || ""} onChange={handleChange} />
+            </div>
 
-                  <td style={{ textAlign: "center" }}>
-                    <input
-                      type="checkbox"
-                      name="isPopular"
-                      checked={editData.isPopular || false}
-                      onChange={handleChange}
-                    />
-                  </td>
+            <div>
+              <label>MRP</label>
+              <input
+                type="number"
+                name="mrp"
+                value={editData.mrp || ""}
+                onChange={handleChange}
+              />
+            </div>
 
-                  {/* ✅ Rank Editable */}
-                  <td>
-                    <select
-                      name="rank"
-                      value={editData.rank || ""}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Rank</option>
-                      {rankOptions.map((r, idx) => (
-                        <option key={idx} value={r}>{r}</option>
-                      ))}
-                    </select>
-                  </td>
+            <div>
+              <label>Price</label>
+              <input
+                type="number"
+                name="price"
+                value={editData.price || ""}
+                onChange={handleChange}
+              />
+            </div>
 
-                  <td>
-                    <button className="btn-save" onClick={handleSave}>Save</button>
-                    <button className="btn-cancel" onClick={handleCancel}>Cancel</button>
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td>{p.name}</td>
-                  <td>{p.modelName}</td>
-                  <td>{p.type}</td>
-                  <td>{p.capacity || "—"}</td>
-                  <td>{p.description || "—"}</td>
-                  <td>{p.warranty || "—"}</td>
-                  <td>{p.mrp}</td>
-                  <td>{p.price}</td>
-                  <td>{p.discount || "—"}%</td>
+            <div>
+              <label>Discount Preview</label>
+              <input value={`${discountPreview}%`} readOnly />
+            </div>
 
-                  <td style={{ textAlign: "center" }}>
-                    {p.isPopular ? "✅ Yes" : "❌ No"}
-                  </td>
+            <div>
+              <label>Rank</label>
+              <select name="rank" value={editData.rank || ""} onChange={handleChange}>
+                <option value="">Select Rank</option>
+                {rankOptions.map((r, idx) => (
+                  <option key={idx} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                  {/* ✅ Rank Display */}
-                  <td>{p.rank || "—"}</td>
+            <div className="product-checkbox-wrap">
+              <label>
+                <input
+                  type="checkbox"
+                  name="isPopular"
+                  checked={editData.isPopular || false}
+                  onChange={handleChange}
+                />{" "}
+                Popular Product
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="removeImage"
+                  checked={editData.removeImage || false}
+                  onChange={handleChange}
+                />{" "}
+                Remove Existing Image
+              </label>
+            </div>
 
-                  <td>
-                    <button onClick={() => handleEdit(p)}>Edit</button>
-                    <button onClick={() => handleDelete(p._id)}>Delete</button>
-                  </td>
-                </>
-              )}
+            <div className="full-width">
+              <label>Description</label>
+              <textarea
+                name="description"
+                value={editData.description || ""}
+                onChange={handleChange}
+                rows={4}
+              />
+            </div>
+
+            <div className="full-width">
+              <label>Detail Description</label>
+              <CKEditor
+                editor={ClassicEditor}
+                data={editData.detailDescription || ""}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setEditData((prev) => ({
+                    ...prev,
+                    detailDescription: data,
+                  }));
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="product-edit-actions">
+            <button className="btn-save" onClick={handleSave}>
+              Save
+            </button>
+            <button className="btn-cancel" onClick={handleCancel}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="table-wrapper">
+        <table className="product-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Model</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Discount</th>
+              <th>Popular</th>
+              <th>Rank</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {currentRecords.map((p, i) => (
+              <tr key={p._id}>
+                <td>{indexOfFirst + i + 1}</td>
+                <td>
+                  <img
+                    src={p.images?.[0] || DEFAULT_IMAGE}
+                    alt={p.name}
+                    style={{ width: 60, height: 60, objectFit: "cover" }}
+                  />
+                </td>
+                <td>{p.name}</td>
+                <td>{p.modelName || "-"}</td>
+                <td>{p.type || "-"}</td>
+                <td>{p.price}</td>
+                <td>{p.discount || "-"}%</td>
+                <td>{p.isPopular ? "Yes" : "No"}</td>
+                <td>{p.rank || "-"}</td>
+                <td>
+                  <button onClick={() => handleEdit(p)}>Open & Edit</button>
+                  <button onClick={() => handleDelete(p._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

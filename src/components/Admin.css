@@ -601,3 +601,75 @@ textarea {
   margin: 2px 0;
   font-size: 13px;
 }
+
+/* ================= PRODUCT EDIT PANEL ================= */
+.product-edit-panel {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #dfe5ef;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
+.product-edit-panel h3 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  color: #004aad;
+}
+
+.product-edit-grid label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.product-checkbox-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.product-checkbox-wrap label {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.product-edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-save {
+  background: #0f9d58;
+  color: #fff;
+}
+
+.btn-save:hover {
+  background: #0a7a43;
+}
+
+.btn-cancel {
+  background: #6c757d;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background: #545b62;
+}
+
+@media (max-width: 768px) {
+  .product-edit-actions {
+    flex-direction: column;
+  }
+}
